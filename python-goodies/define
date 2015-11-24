@@ -7,7 +7,7 @@ Usage: `define <word>` where <word> is a command line argument
 
 Author:   Ryan James Spencer
 Date:     7/3/15
-Version:  0.1b
+Version:  1.0.0
 """
 
 import argparse
@@ -42,18 +42,16 @@ def find_def(query):
     else:
         # Query the service and construct an ElementTree
         url = construct_url(query)
-        response = urllib2.urlopen(url).read()
-        root = ET.fromstring(response)
-        dict_name = re.compile('.*Name')
-        definition = re.compile('.*WordDefinition')
-        # Regex the element tree for dictionary name and definition
-        for item in root.findall('.//'):
-            # Dictionary names are under the 'Name' tag.
-            # Definitions are under 'WordDefinition'.
-            # Care should be made because the root is also called 'WordDefinition'
-            match = re.match(dict_name, item.tag) or re.match(definition, item.tag)
-            if match:
-                print(item.text)
+        response_file = urllib2.urlopen(url)
+        tree = ET.parse(response_file)
+        root = tree.getroot()
+        ns = 'http://services.aonaware.com/webservices/'
+        dicts = root.findall('.//{{{0}}}Name'.format(ns))
+        defs = root.findall('.//{{{0}}}WordDefinition'.format(ns))
+        results = zip(dicts, defs)
+        for s, d in results:
+            print '{}\n{}'.format(s.text, d.text)
+
 
 if __name__ == '__main__':
     query = setup_args()
