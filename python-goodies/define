@@ -34,25 +34,28 @@ def construct_url(query):
     return url
 
 
-def find_def(query):
+def check_run_env():
     suffix = re.compile(r'.*\.py.*')
     if re.match(suffix, sys.argv[0]):
         print("You are attempting to run this script directly.")
         print("Please rerun with 'define <word>'")
-    else:
-        # Query the service and construct an ElementTree
-        url = construct_url(query)
-        response_file = urllib2.urlopen(url)
-        tree = ET.parse(response_file)
-        root = tree.getroot()
-        ns = 'http://services.aonaware.com/webservices/'
-        dicts = root.findall('.//{{{0}}}Name'.format(ns))
-        defs = root.findall('.//{{{0}}}WordDefinition'.format(ns))
-        results = zip(dicts, defs)
-        for s, d in results:
-            print '{}\n{}'.format(s.text, d.text)
+        sys.exit(-1)
+
+def find_def(query):
+    # Query the service and construct an ElementTree
+    url = construct_url(query)
+    response_file = urllib2.urlopen(url)
+    tree = ET.parse(response_file)
+    root = tree.getroot()
+    ns = 'http://services.aonaware.com/webservices/'
+    dicts = root.findall('.//{{{0}}}Name'.format(ns))
+    defs = root.findall('.//{{{0}}}WordDefinition'.format(ns))
+    results = zip(dicts, defs)
+    for s, d in results:
+        print '{}\n{}'.format(s.text, d.text)
 
 
 if __name__ == '__main__':
     query = setup_args()
+    check_run_env()
     find_def(query)
