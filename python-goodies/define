@@ -6,7 +6,7 @@ Queries XML from services.aonaware.com
 Usage: `define <word>` where <word> is a command line argument
 
 Author:   Ryan James Spencer
-Date:     7/3/15
+Date:     24/11/15
 Version:  1.0.0
 """
 
