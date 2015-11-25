@@ -51,25 +51,29 @@ type Change = (String, Loc)
 -- For our cases, 'first original sequence' shall be sequence a
 -- second original sequence shall be b
 -- and subsequence shall be s
-diff :: Eq a => [a] -> [a] -> [Change]
+diff :: (Eq a, Show a) => [a] -> [a] -> [Change]
 -- We can pattern match to any type constructor.
 -- Most commonly we pattern match to lists, in the form of (head:tail)
 -- Just like (car:cdr) from lisp, where `:` is the cons operator
 -- There is a convention to name things with single values for brevity
 -- and to name lists heads as some single letter, say, x
 -- and 'exes' (xs) as the tail
+
 diff a b = diff' a b (lcs a b)  0
-    where diff' :: Eq a => [a] -> [a] -> [a] -> Int -> [Change]
-          -- These at symbols capture the whole pattern group for us., therefore, the list x can be referred to entirely by x, or individually b a or as
-          diff' _ _ [] _ = []
-          diff' x [] _ n = [("-", (m+n)) | m <- [0..((length x)-1)]] -- put a bunch of -'s the length of x
-          diff' [] y _ n = [("+", (m+n)) | m <- [0..((length y)-1)]] -- put a bunch of +'s the length of y
-          diff' x@(a:as) y@(b:bs) s n
+    where diff' :: (Eq a, Show a) => [a] -> [a] -> [a] -> Int -> [Change]
+          -- These at symbols capture the whole pattern group for us., therefore, the list x can be referred to entirely by x, or individually by a or as
+          diff' [] [] [] _ = []
+          -- This incrementing of n is a great candidate for the State monad, but we'll get to that later...
+          diff' x [] [] n = zip (map (\c -> "- " ++ show c) x) ([m+n | m <- [0 .. ((length x)-1)]])
+          diff' [] y [] n = zip (map (\c -> "+ " ++ show c) y) ([m+n | m <- [0 .. ((length y)-1)]])
+          diff' x@(a:as) y@(b:bs) z@(s:ss) n
             -- these backticks around elem mean its going to be used as an infix vs. prefix manner
-            | a `notElem` s = ("-", n) : diff' as y s (n+1)
-            | b `notElem` s = ("+", n) : diff' x bs s (n+1)
-            | otherwise = diff' as bs s (n+1)
+            | a `notElem` z = ("- " ++ show a, n) : diff' as y z (n+1)
+            | b `notElem` z = ("+ " ++ show b, n) : diff' x bs z (n+1)
+            | otherwise = diff' as bs ss (n+1)
 
 
+-- We'll setup HUnit / HSpec later for unit testing
 simpleTest0 = diff "abc" "abcd"
-simpleTest1 = diff "I am a" "I am not a"
+simpleTest1 = diff "I am a" "I am not amtrack"
+simpleTest2 = diff "I am a ck" "I am not amtrack"
