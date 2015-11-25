@@ -10,8 +10,20 @@ Sean Donald Spencer
 
 -}
 
+-- Type definitions usually go up top
+type Loc = Int
+type Change = (String, Loc)
+
 main :: IO ()
-main = undefined
+main = do
+    putStrLn "To make `I am a` look like `I am amtrack`..."
+    putStrLn $ showChange $ diff "I am a" "I am amtrack"
+
+showChange :: [Change] -> String
+showChange [] = []
+showChange ((s,l):rst)
+    | null rst = s ++ " at " ++ show l
+    | otherwise = s ++ " at " ++ show l ++ "\n"  ++ showChange rst
 
 -- In Haskell, a cardinal rule: we define what things are, not how to get them.
 -- Therefore, this function gives us the subsequence from the longest common
@@ -38,8 +50,6 @@ lcs a@(ah:arst) b@(bh:brst)
 -- This helps us understand the form of our function; since functions are datum,
 -- this is wildly helpful for making things more composable
 
-type Loc = Int
-type Change = (String, Loc)
 
 -- Wikipedia:
 -- "From a longest common subsequence it is only a small step to get
@@ -63,9 +73,8 @@ diff a b = diff' a b (lcs a b)  0
     where diff' :: (Eq a, Show a) => [a] -> [a] -> [a] -> Int -> [Change]
           -- These at symbols capture the whole pattern group for us., therefore, the list x can be referred to entirely by x, or individually by a or as
           diff' [] [] [] _ = []
-          -- This incrementing of n is a great candidate for the State monad, but we'll get to that later...
-          diff' x [] [] n = zip (map (\c -> "- " ++ show c) x) ([m+n | m <- [0 .. ((length x)-1)]])
-          diff' [] y [] n = zip (map (\c -> "+ " ++ show c) y) ([m+n | m <- [0 .. ((length y)-1)]])
+          diff' x [] [] n = zip (map (\c -> "- " ++ show c) x) [n..]
+          diff' [] y [] n = zip (map (\c -> "+ " ++ show c) y) [n..]
           diff' x@(a:as) y@(b:bs) z@(s:ss) n
             -- these backticks around elem mean its going to be used as an infix vs. prefix manner
             | a `notElem` z = ("- " ++ show a, n) : diff' as y z (n+1)
