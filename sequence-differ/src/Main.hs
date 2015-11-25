@@ -31,7 +31,7 @@ main = undefined
 -- The pipe symbol denotes 'or', e.g. data Color = Red | Green | Blue
 data ChangeType = Replace | Insert | Delete
 -- A change is a tuple with a type of change and an index location
-data Change = (ChangeType, Int)
+type Change = (ChangeType, Int)
 
 -- This says 'matcher takes a list of as and a list of bs and
 -- gives us back a list of changes
