@@ -3,9 +3,9 @@
 
 name:                sequence-differ
 version:             0.1.0.0
--- synopsis:
--- description:
--- license:
+synopsis:            A *nix `diff`-like utility.
+description:         Compares two sequences and suggests changes to make the first sequence equal to the second.
+-- license:             
 license-file:        LICENSE
 author:              Ryan James Spencer, Sean Donald Spencer
 maintainer:          spencer.ryanjames@gmail.com, seandon4lycos@gmail.com
