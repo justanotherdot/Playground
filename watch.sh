@@ -5,5 +5,5 @@
 #
 
 while inotifywait -qq -e modify `pwd`; do
-    ./main.ml
+    $1
 done
