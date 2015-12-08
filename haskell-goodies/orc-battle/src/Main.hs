@@ -1,3 +1,10 @@
+{- 
+
+original is at...
+http://landoflisp.com/orc-battle.lisp
+
+-}
+
 import System.Random
 import Control.Monad.State
 
