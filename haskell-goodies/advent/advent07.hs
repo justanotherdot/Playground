@@ -16,6 +16,7 @@ import qualified Data.Map as Map
 
 type Op = String
 type Ident = String
+type RuleMap = Map.Map Ident Rule
 data Arg = Value CUShort | Var String deriving (Show, Eq)
 data Rule = Rule Ident Op [Arg] deriving (Show, Eq)
 
@@ -23,35 +24,34 @@ data Rule = Rule Ident Op [Arg] deriving (Show, Eq)
 t = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i"
 m = rules t
 
-main = do (fn:_) <- getArgs
+main = do (fn:x:_) <- getArgs
           contents <- readFile fn
-          let rs = rules contents
-           in print $ evaluate (Map.lookup "a" rs) rs
-
-parseArgs :: [String] -> [Arg]
-parseArgs = map parseArg
-          where parseArg :: String -> Arg
-                parseArg a = case dropWhile isDigit a of
-                                       "" -> Value (read a :: CUShort)
-                                       _  -> Var a
+          print $ connect x (rules contents)
 
 
-rules :: String -> Map.Map Ident Rule
+rule :: String -> Rule
+rule s = let elems   = words s
+             ident   = last elems
+             nthel i = elems !! i
+             in case length elems of
+                    5 -> Rule ident (nthel 1) (args [nthel 0, nthel 2]) -- Binary ops: AND, etc.
+                    4 -> Rule ident (nthel 0) (args [nthel 1])          -- "NOT"
+                    3 -> Rule ident "ASSIGN" (args [nthel 0])
+                    _ -> error "Unrecognized rule"
+                    where args = let parseArg :: String -> Arg
+                                     parseArg a = case dropWhile isDigit a of
+                                                      "" -> Value (read a :: CUShort)
+                                                      _  -> Var a
+                                                      in map parseArg
+
+rules :: String -> RuleMap
 rules s = let ls = lines s
               ruleList = map rule ls
               ruleMap  = foldl (\x r@(Rule n _ _) -> Map.insert n r x) Map.empty
               in ruleMap ruleList
-              where rule s = case length elems of
-                                       5 -> Rule ident (nthel 1) (parseArgs [nthel 0, nthel 2])
-                                       4 -> Rule ident (nthel 0) (parseArgs [nthel 1])
-                                       3 -> Rule ident "ASSIGN" (parseArgs [nthel 0])
-                                       _ -> error "Unrecognized rule"
-                                       where elems = words s
-                                             ident = last elems
-                                             nthel i = elems !! i
-           
 
-evaluate :: Maybe Rule -> Map.Map Ident Rule -> CUShort
+
+evaluate :: Maybe Rule -> RuleMap -> CUShort
 evaluate r m = case r of
     Just (Rule _ "ASSIGN" (a:_)) -> parseArg a
     Just (Rule _ "AND" (a:b:_)) -> parseArg a .&. parseArg b
@@ -64,3 +64,6 @@ evaluate r m = case r of
           parseArg a = case a of
                               Value n -> n
                               Var x   -> evaluate (Map.lookup x m) m
+
+connect :: String -> RuleMap -> CUShort
+connect k m = evaluate (Map.lookup k m) m
