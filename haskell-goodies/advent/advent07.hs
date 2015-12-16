@@ -36,6 +36,7 @@ main = do (fn:x:_) <- getArgs
           print (c Map.! x)
 
 t = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i"
+rs = rules t
 
 arg :: String -> Arg
 arg s = if isDigit (head s) then Value (read s :: CUShort)
@@ -48,7 +49,7 @@ rule s = let elems = words s
              in case length elems of 5 -> case elems !! 1 of "AND"    -> And name (arg $ head elems) (arg $ elems !! 2)
                                                              "OR"     -> Or name (arg $ head elems) (arg $ elems !! 2)
                                                              "LSHIFT" -> Lshift name (arg $ head elems) (arg $ elems !! 2)
-                                                             "RSHIFT" -> Lshift name (arg $ head elems) (arg $ elems !! 2)
+                                                             "RSHIFT" -> Rshift name (arg $ head elems) (arg $ elems !! 2)
                                      4 -> Not name (arg $ elems !! 1)
                                      3 -> Assign name (arg $ head elems)
 
@@ -65,8 +66,8 @@ makeCircuit rls = circuit
                 connect (Assign id val) = (id, get val)
                 connect (And id a1 a2) = (id, get a1 .&. get a2)
                 connect (Or id a1 a2) = (id, get a1 .|. get a2)
-                connect (Lshift id a val) = (id, shift (get a) (fromIntegral (get val)))
-                connect (Rshift id a val) = (id, shift (get a) (fromIntegral (get val)))
+                connect (Lshift id a val) = (id, shiftL (get a) (fromIntegral (get val)))
+                connect (Rshift id a val) = (id, shiftR (get a) (fromIntegral (get val)))
                 connect (Not id a) = (id, complement (get a))
                 get :: Arg -> CUShort
                 get (Var x) = circuit Map.! x
