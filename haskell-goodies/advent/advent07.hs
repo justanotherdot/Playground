@@ -19,7 +19,6 @@ import Foreign.C.Types
 import System.Environment
 import qualified Data.Map.Lazy as M
 
-type Op = String
 type Ident = String
 type Circuit = M.Map String CUShort
 data Arg = Value CUShort | Var Ident deriving (Show, Eq)
