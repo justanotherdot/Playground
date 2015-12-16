@@ -6,7 +6,6 @@ This solution takes advantage of Haskell's built-in memoization (this is what th
 "Implementation of the Spineless G-Tag Machine" is talking about.)
 
 Other Haskell solutions to this puzzle involve imperative-styled solutions (say with Data.HashMap.Strict)
-Typically this involves some hashmap (in particular, Data.HashMap.Strict)
 
 Ryan James Spencer
 16 Dec 2015
