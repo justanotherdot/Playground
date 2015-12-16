@@ -53,12 +53,12 @@ rules s = let ls = lines s
 
 evaluate :: Ident -> RuleMap -> CUShort
 evaluate r m = case Map.lookup r m of
-                   Just (Rule _ "ASSIGN" (a:_)) -> parse a
-                   Just (Rule _ "AND" (a:b:_)) -> parse a .&. parse b
-                   Just (Rule _ "OR" (a:b:_)) -> parse a .|. parse b
+                   Just (Rule _ "ASSIGN" (a:_))   -> parse a
+                   Just (Rule _ "AND" (a:b:_))    -> parse a .&. parse b
+                   Just (Rule _ "OR" (a:b:_))     -> parse a .|. parse b
                    Just (Rule _ "LSHIFT" (a:b:_)) -> shift (parse a) (fromIntegral $ parse b)
                    Just (Rule _ "RSHIFT" (a:b:_)) -> shift (parse a) (fromIntegral $ parse b)
-                   Just (Rule _ "NOT" (a:_)) -> complement $ parse a
-                   Just r -> error $ "Unrecognized rule under evaluation: " ++ show r
+                   Just (Rule _ "NOT" (a:_))      -> complement $ parse a
+                   Just r                         -> error $ "Unrecognized rule under evaluation: " ++ show r
                    where parse r = case r of Value n -> n
-                                             Var x -> evaluate x m
+                                             Var x   -> evaluate x m
