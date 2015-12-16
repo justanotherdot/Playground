@@ -12,21 +12,21 @@ import Data.Char
 import Data.List
 import Foreign.C.Types
 import System.Environment
-import qualified Data.Map as Map
+import qualified Data.Map.Lazy as Map
+
+-- for debugging only, will remove later XXX
+import Debug.Trace
 
 type Op = String
 type Ident = String
 type RuleMap = Map.Map Ident Rule
-data Arg = Value CUShort | Var String deriving (Show, Eq)
-data Rule = Rule Ident Op [Arg] deriving (Show, Eq)
+data Rule = Rule Ident Op [Rule] | Value CUShort | Var String deriving (Show, Eq)
 
--- for debugging only, will remove later XXX
-t = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i"
-m = rules t
 
 main = do (fn:x:_) <- getArgs
           contents <- readFile fn
-          print $ connect x (rules contents)
+          let rs = rules contents
+          print $ evaluate x rs
 
 
 rule :: String -> Rule
@@ -38,11 +38,11 @@ rule s = let elems   = words s
                     4 -> Rule ident (nthel 0) (args [nthel 1])          -- "NOT"
                     3 -> Rule ident "ASSIGN" (args [nthel 0])
                     _ -> error "Unrecognized rule"
-                    where args = let parseArg :: String -> Arg
-                                     parseArg a = case dropWhile isDigit a of
-                                                      "" -> Value (read a :: CUShort)
-                                                      _  -> Var a
-                                                      in map parseArg
+                    where args = map arg
+                                 where arg :: String -> Rule
+                                       arg a = case dropWhile isDigit a of
+                                                   "" -> Value (read a :: CUShort)
+                                                   _  -> Var a
 
 rules :: String -> RuleMap
 rules s = let ls = lines s
@@ -51,19 +51,14 @@ rules s = let ls = lines s
               in ruleMap ruleList
 
 
-evaluate :: Maybe Rule -> RuleMap -> CUShort
-evaluate r m = case r of
-    Just (Rule _ "ASSIGN" (a:_)) -> parseArg a
-    Just (Rule _ "AND" (a:b:_)) -> parseArg a .&. parseArg b
-    Just (Rule _ "OR" (a:b:_)) -> parseArg a .|. parseArg b
-    Just (Rule _ "LSHIFT" (a:b:_)) -> shift (parseArg a) (fromIntegral $ parseArg b)
-    Just (Rule _ "RSHIFT" (a:b:_)) -> shift (parseArg a) (fromIntegral $ parseArg b)
-    Just (Rule _ "NOT" (a:_)) -> complement $ parseArg a
-    Just r -> error $ "Unrecognized rule under evaluation: " ++ show r
-    where parseArg :: Arg -> CUShort
-          parseArg a = case a of
-                              Value n -> n
-                              Var x   -> evaluate (Map.lookup x m) m
-
-connect :: String -> RuleMap -> CUShort
-connect k m = evaluate (Map.lookup k m) m
+evaluate :: Ident -> RuleMap -> CUShort
+evaluate r m = case Map.lookup r m of
+                   Just (Rule _ "ASSIGN" (a:_)) -> parse a
+                   Just (Rule _ "AND" (a:b:_)) -> parse a .&. parse b
+                   Just (Rule _ "OR" (a:b:_)) -> parse a .|. parse b
+                   Just (Rule _ "LSHIFT" (a:b:_)) -> shift (parse a) (fromIntegral $ parse b)
+                   Just (Rule _ "RSHIFT" (a:b:_)) -> shift (parse a) (fromIntegral $ parse b)
+                   Just (Rule _ "NOT" (a:_)) -> complement $ parse a
+                   Just r -> error $ "Unrecognized rule under evaluation: " ++ show r
+                   where parse r = case r of Value n -> n
+                                             Var x -> evaluate x m
