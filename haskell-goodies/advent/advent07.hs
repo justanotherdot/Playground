@@ -13,6 +13,7 @@ import Data.List
 import Foreign.C.Types
 import System.Environment
 import qualified Data.Map.Lazy as Map
+import Data.Map.Lazy ((!))
 
 -- for debugging only, will remove later XXX
 import Debug.Trace
@@ -33,7 +34,7 @@ main = do (fn:x:_) <- getArgs
           contents <- readFile fn
           let rs = rules contents
               c  = makeCircuit rs
-          print (c Map.! x)
+          print (c ! x)
 
 t = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i"
 rs = rules t
@@ -70,5 +71,5 @@ makeCircuit rls = circuit
                 connect (Rshift id a val) = (id, shiftR (get a) (fromIntegral (get val)))
                 connect (Not id a) = (id, complement (get a))
                 get :: Arg -> CUShort
-                get (Var x) = circuit Map.! x
+                get (Var x) = circuit ! x
                 get (Value n) = n
