@@ -24,14 +24,17 @@ showChange ((s,l):rst)
     | null rst = s ++ " at " ++ show l
     | otherwise = s ++ " at " ++ show l ++ "\n"  ++ showChange rst
 
+-- Return the longest common subsequence of two seqs
 lcs :: Eq a => [a] -> [a] -> [a]
-lcs [] _ = []
-lcs _ [] = []
-lcs a@(ah:arst) b@(bh:brst)
-    | ah == bh = ah : lcs arst brst
-    | otherwise = longest (lcs a brst) (lcs arst b)
-    where longest :: [a] -> [a] -> [a]
-          longest xs ys = if length xs > length ys then xs else ys
+lcs a b
+  | or [null a, null b]  = []
+  | x == y               = x : lcs xs ys
+  | otherwise            = longest (lcs a xs) (lcs xs b)
+    where (x:xs) = a
+          (y:ys) = b
+
+longest :: (Eq a) => [a] -> [a] -> [a]
+longest as bs = if length as > length bs then as else bs
 
 diff :: (Eq a, Show a) => [a] -> [a] -> [Change]
 diff a b = diff' a b (lcs a b)  0
