@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# THIS SCRIPT REQUIRES INOTIFY
+#
+# Checks a directory for changes and runs actions based on, e.g. saves.
+# Usage: `watcher <program> <args>`
+#
+# (c) 2015, 2016 Ryan James Spencer
+
+getCurrMillis() {
+  date +'%H 3600 * %M 60 * + %S + 1000 * %N 1000000 / + p' | dc
+}
+
+while inotifywait -qq -e modify `pwd`; do
+    echo -e "Running...\n"
+    startTime=`getCurrMillis`
+    "$@"
+    endTime=`getCurrMillis`
+    elapsedMilli=$(dc <<< "$endTime $startTime - p")
+    x=$(dc  <<< "$elapsedMilli 1000 / p" )
+    seconds=$(dc <<< "$x 60 % p")
+    elapsed="$seconds.$elapsedMilli"
+
+    echo -e "\nThat took ${elapsed}s"
+done

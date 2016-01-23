@@ -107,7 +107,6 @@ class Primes
     #x = rand(0..n-1) # uncomment later for efficiency, may have to redo
     x = 2
     y = 2
-    k = 2
     d = 1
     while i <= (n**(1/4.0))
       i += 1
