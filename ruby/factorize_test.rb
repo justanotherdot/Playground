@@ -4,26 +4,42 @@ require 'minitest/autorun'
 require_relative 'primes'
 
 class PrimesTest < Minitest::Test
+  # Pollard Rho tests
   def test_poll_rho_1200
-    assert_equal [3, 400], Primes.poll_rho(1200)
+    n = 1200
+    d, _ = Primes.poll_rho(n)
+    assert_equal 0, (n % d)
   end
 
   def test_poll_rho_400
-    assert_equal [16, 25], Primes.poll_rho(400)
+    n = 400
+    d, _ = Primes.poll_rho(n)
+    assert_equal 0, (n % d)
   end
 
   def test_poll_rho_16
-    assert_equal [false, 16], Primes.poll_rho(16)
+    d, _ = Primes.poll_rho(16)
+    if d != false
+      assert_equal 0, (16 % d)
+    else
+      assert_equal false, d
+    end
   end
 
   def test_poll_rho_25
-    assert_equal [false, 25], Primes.poll_rho(25)
+    d, _ = Primes.poll_rho(25)
+    if d != false
+      assert_equal 0, (25 % d)
+    else
+      assert_equal false, d
+    end
   end
 
   def test_trial_div_16
     assert_equal [2,2,2,2], Primes.trial_div(16)
   end
 
+  # Trial Division Tests
   def test_trial_div_25
     assert_equal [5,5], Primes.trial_div(25)
   end
@@ -48,6 +64,7 @@ class PrimesTest < Minitest::Test
     assert_equal [2,2,2,2,2,2,2,5,5,5,5,5,5,5], Primes.trial_div(10000000)
   end
 
+  # Modular Exponentiation Tests
   def test_mod_exp_11pow13mod53
     assert_equal 52, Primes.mod_exp(11, 13, 53)
   end
@@ -60,6 +77,7 @@ class PrimesTest < Minitest::Test
     assert_equal 1, Primes.mod_exp(11, 102, 57)
   end
 
+  # Miller-Rabin primality tests
   def test_is_prime_32452867
     assert Primes.mill_rab(32452867)
   end
@@ -113,6 +131,7 @@ class PrimesTest < Minitest::Test
     assert_equal false, Primes.mill_rab(4980019731027051356344056416276026592333932610954020105156667883269888206386119513058400355612571198438511950152690467372712488391425876725831041)
   end
 
+  # Factorization tests
   def test_factorize_bignum
     assert_equal({2=>[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], 5=>[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]}, Primes.factorize(1000000000000000))
   end

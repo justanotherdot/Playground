@@ -54,6 +54,10 @@ class Primes
     true # almost surely
   end
 
+  def self.naive_is_prime(n)
+    # uses primes of form of 6k+/-1 to check
+  end
+
   def self.trial_div(n)
     n_orig = n
     factors = []
@@ -104,8 +108,8 @@ class Primes
 
     i = 0
 
-    #x = rand(0..n-1) # uncomment later for efficiency, may have to redo
-    x = 2
+    x = rand(0..n-1) # uncomment later for efficiency, may have to redo
+    #x = 2
     y = 2
     d = 1
     while i <= (n**(1/4.0))
