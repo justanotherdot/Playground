@@ -1,3 +1,10 @@
+#
+# A haphazard primes class for ruby for practicing more complicated algorithms.
+#
+# Author: Ryan James Spencer
+# Date: Jan 26, 2016
+#
+
 class Primes
   def self.mod_exp(base, exp, mod)
     # Should probably raise an error for mod == 0...
@@ -56,6 +63,7 @@ class Primes
 
   def self.naive_is_prime(n)
     # uses primes of form of 6k+/-1 to check
+    raise NotImplementedError
   end
 
   def self.trial_div(n)
@@ -85,7 +93,6 @@ class Primes
       if d != false
         factors << d
       else
-        #factors << Raindrops.trial_div(n)
         break
       end
     end
@@ -108,7 +115,7 @@ class Primes
 
     i = 0
 
-    x = rand(0..n-1) # uncomment later for efficiency, may have to redo
+    x = rand(0..n-1)
     y = x
     d = 1
     while i <= (n**(1/4.0))
