@@ -35,11 +35,11 @@ class PrimesTest < Minitest::Test
     end
   end
 
+  # Trial Division Tests
   def test_trial_div_16
     assert_equal [2,2,2,2], Primes.trial_div(16)
   end
 
-  # Trial Division Tests
   def test_trial_div_25
     assert_equal [5,5], Primes.trial_div(25)
   end
