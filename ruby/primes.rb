@@ -1,8 +1,12 @@
 #
-# A haphazard primes class for ruby for practicing more complicated algorithms.
+#copyright (c) 2015 Ryan James Spencer
 #
-# Author: Ryan James Spencer
-# Date: Jan 26, 2016
+#This Source Code Form is subject to the terms of the Mozilla Public
+#License, v. 2.0. If a copy of the MPL was not distributed with this
+#file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+#
+# Practice for prime factoring/checking algorithms
 #
 
 class Primes

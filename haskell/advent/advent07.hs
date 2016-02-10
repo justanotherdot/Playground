@@ -1,4 +1,12 @@
 {-
+copyright (c) 2015 Ryan James Spencer
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+-}
+
+{-
 
 My stab at the adventofcode.com's day 7 puzzle 'Some Assembly Required'
 
@@ -6,9 +14,6 @@ This solution takes advantage of Haskell's built-in memoization (this is what th
 "Implementation of the Spineless G-Tag Machine" is talking about.)
 
 Other Haskell solutions to this puzzle involve imperative-styled solutions (say with Data.HashMap.Strict)
-
-Ryan James Spencer
-16 Dec 2015
 
 -}
 
