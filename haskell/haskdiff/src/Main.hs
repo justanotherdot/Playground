@@ -1,15 +1,13 @@
 {-
+
 copyright (c) 2015 Ryan James Spencer, Sean Donald Spencer
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-haskdiff : A diff utility written in Haskell
 
-Authors:
-Ryan James Spencer
-Sean Donald Spencer
+haskdiff : A diff utility written in Haskell
 
 -}
 
